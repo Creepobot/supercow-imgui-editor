@@ -1,0 +1,38 @@
+{
+    "Lua.diagnostics.disable": [
+        "param-type-mismatch"
+    ],
+    "Lua.diagnostics.globals": [
+        "memory",
+        "imgui",
+        "ffi",
+        "mainBlockPos",
+        "mainBlockSize",
+        "events",
+        "currentScene",
+        "editorScene",
+        "inEditor",
+        "renderExtraparamsDialog",
+        "tooltip",
+        "objectPool",
+        "gameScene",
+        "fileDialogs",
+        "saveFileDialog",
+        "openFileDialog",
+        "fileDialog",
+        "levelFileName",
+        "currentEditorStage",
+        "currentEditorLevel",
+        "currentEditorLevelAddr",
+        "currentEditorStageAddr",
+        "levelEditedWindowCloseCallback",
+        "levelEditedLevelInitCallback",
+        "saveLevelFile",
+        "initEditorLevel",
+        "saveLevel",
+        "currentStageAddr",
+        "currentLevelAddr",
+        "currentGroup",
+        "modalExecuted"
+    ]
+}

@@ -1,0 +1,8 @@
+id: 1mGu1-ed1tor
+title: ImEditor
+lua-script: src\main.lua
+version: 0.1
+sdk-version: 2.2.8
+description: ImGui интерфейс вместо уродливых и неудобных окон редактора
+socialLinks:
+  github: https://github.com/Creepobot/supercow-imgui-editor
