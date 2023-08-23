@@ -85,6 +85,7 @@ return function()
 
     if imgui.Button("OL", imgui.ImVec2(32, 24)) then
         local openFile = fileDialog[2].new()
+        openFile.filter = "Supercow Levels (.lev)\0*.lev\0\0"
         if openFile:OpenDialog() then
             parseFormat:writeString("%s")
             local path = ffi.cast("uintptr_t", ffi.new("char[256]", openFile.fileName))
