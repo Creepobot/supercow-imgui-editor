@@ -6,7 +6,7 @@ local dunno2 = memory.at("83 3D ? ? ? ? ? 74 ? 8B 0D"):add(2):readOffset()
 local entityCreate = memory.at("E8 ? ? ? ? 83 C4 ? A3 ? ? ? ? 8B 55"):readNearCall():getFunction("int (__cdecl *)(int)")
 local dunno3 = memory.at("83 3D ? ? ? ? ? 0F 85 ? ? ? ? 83 3D"):add(2):readOffset()
 local dunno4 = memory.at("55 8B EC 83 EC ? 6A ? 6A ? 68"):getFunction("bool (*)()")
-local selectedNameAddr = memory.at("A3 ? ? ? ? E8 ? ? ? ? 8B E5 5D C3 5C"):add(1):readOffset()
+local selectedNameAddr = memory.at("05 ? ? ? ? A3 ? ? ? ? E8"):add(6):readOffset()
 
 local index = 0
 local previousGroup = -1
