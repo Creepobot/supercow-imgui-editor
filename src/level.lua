@@ -11,7 +11,6 @@ local clearLevelDialog = false
 
 local parseFormat = memory.at("68 ? ? ? ? 8D 8D ? ? ? ? 51 E8 ? ? ? ? 83 C4 ? 68 ? ? ? ? FF 15 ? ? ? ? 8B 55 ? 83 C2 ? 52 68 ? ? ? ? 8D 85 ? ? ? ? 50 E8 ? ? ? ? 83 C4 ? 8D 8D ? ? ? ? 51 FF 15 ? ? ? ? 8D 4D"):add(1):readOffset()
 local parseLevelFile = memory.at("E8 ? ? ? ? E8 ? ? ? ? 5D C3 CC 55 8B EC 5D"):readNearCall():getFunction("char (__thiscall *)(int, int, int)")
-local currentStageAddr = memory.at("A1 ? ? ? ? 50 B9 ? ? ? ? E8 ? ? ? ? E8 ? ? ? ? 5D"):add(1)
 local levelName = memory.at("B9 ? ? ? ? E8 ? ? ? ? E8 ? ? ? ? 5D"):add(1):readInt()
 
 local readFormat = memory.at("68 ? ? ? ? 8D 8D ? ? ? ? 51 E8 ? ? ? ? 83 C4 ? 68 ? ? ? ? FF 15 ? ? ? ? 8B 55 ? 83 C2 ? 52 68 ? ? ? ? 8D 85 ? ? ? ? 50 E8 ? ? ? ? 83 C4 ? 8D 8D ? ? ? ? 51 FF 15 ? ? ? ? 85 C0"):add(1):readOffset()
@@ -21,9 +20,16 @@ local readFormat = memory.at("68 ? ? ? ? 8D 8D ? ? ? ? 51 E8 ? ? ? ? 83 C4 ? 68 
 currentEditorStage = ffi.new("int[1]", 1)
 currentEditorLevel = ffi.new("int[1]", 1)
 
---local test = imgui.GetMainViewport().WorkSize
+local callOnce = true
 
 return function()
+    if callOnce then
+        callOnce = false
+
+        currentEditorStage[0] = currentStageAddr:readInt() + 1
+        currentEditorLevel[0] = currentLevelAddr:readInt() + 1
+    end
+
     imgui.SetNextWindowPos(imgui.ImVec2(imgui.GetMainViewport().WorkSize.x - 168, 0), imgui.Cond.Once)
     imgui.SetNextWindowSize(imgui.ImVec2(168, -1))
     imgui.Begin("Уровень", nil, (imgui.WindowFlags.NoSavedSettings or 0) + (imgui.WindowFlags.NoResize or 0))

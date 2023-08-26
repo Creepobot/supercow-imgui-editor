@@ -61,8 +61,6 @@ end
 
 hideThatShit(0)
 CleanGroups()
-currentEditorStage[0] = currentEditorStageAddr:readInt() + 1
-currentEditorLevel[0] = currentEditorLevelAddr:readInt() + 1
 inEditor = currentScene:readInt() == editorScene
 mainBlockPos = imgui.ImVec2(0, 0)
 mainBlockSize = 0
