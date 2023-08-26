@@ -22,73 +22,81 @@ return function()
     imgui.SetNextWindowSize(imgui.ImVec2(168, -1))
     imgui.Begin("Действия", nil, (imgui.WindowFlags.NoSavedSettings or 0) + (imgui.WindowFlags.NoResize or 0))
 
-    if imgui.Button("SM", imgui.ImVec2(32, 24)) then
-        curEditMode:writeInt(0)
-        editModeApply()
-    end
+    if imgui.BeginTable("###testTable", 4, (imgui.TableFlags.Borders or 0) + (imgui.TableFlags.NoSavedSettings or 0)) then
+        for i = 0, 3, 1 do
+            imgui.TableNextColumn()
+            if i == 0 then
 
-    if imgui.BeginPopupContextItem() then
-        local dunno2Bool = objsBool:readSBool()
-        if imgui.Checkbox("Объекты", ffi.new("bool[1]", dunno2Bool)) then
-            objsBool:writeByte(dunno2Bool and 0 or 1)
-        end
-        tooltip("Выделение объектов на уровне")
-
-        local groBool = groSelect:readSBool()
-        local grosBool = grosSelect:readSBool()
-        if imgui.Checkbox("Граунд", ffi.new("bool[1]", groBool)) then
-            if groBool then
-                groSelect:writeByte(0)
-            else
-                groSelect:writeByte(1)
-                if grosBool then
-                    grosSelect:writeByte(0)
+                if imgui.Selectable_Bool("SM", currentMode:readInt() == i) then
+                    curEditMode:writeInt(0)
+                    editModeApply()
                 end
+
+                if imgui.BeginPopupContextItem() then
+                    local dunno2Bool = objsBool:readSBool()
+                    if imgui.Checkbox("Объекты", ffi.new("bool[1]", dunno2Bool)) then
+                        objsBool:writeByte(dunno2Bool and 0 or 1)
+                    end
+                    tooltip("Выделение объектов на уровне")
+
+                    local groBool = groSelect:readSBool()
+                    local grosBool = grosSelect:readSBool()
+                    if imgui.Checkbox("Граунд", ffi.new("bool[1]", groBool)) then
+                        if groBool then
+                            groSelect:writeByte(0)
+                        else
+                            groSelect:writeByte(1)
+                            if grosBool then
+                                grosSelect:writeByte(0)
+                            end
+                        end
+                    end
+                    tooltip("Выделение граунда на выбранном слое")
+
+                    if imgui.Checkbox("Граунды", ffi.new("bool[1]", grosBool)) then
+                        if grosBool then
+                            grosSelect:writeByte(0)
+                        else
+                            grosSelect:writeByte(1)
+                            if groBool then
+                                groSelect:writeByte(0)
+                            end
+                        end
+                    end
+                    tooltip("Выделение граунда на всех слоях")
+
+                    imgui.EndPopup()
+                end
+                tooltip("Режим выделения\nПравый клик для настроек")
+
+            elseif i == 1 then
+
+                if imgui.Selectable_Bool("MM", currentMode:readInt() == i) then
+                    curEditMode:writeInt(1)
+                    editModeApply()
+                end
+                tooltip("Режим перемещения [Ctrl+ЛКМ]")
+
+            elseif i == 2 then
+
+                if imgui.Selectable_Bool("RM", currentMode:readInt() == i) then
+                    curEditMode:writeInt(2)
+                    editModeApply()
+                end
+                tooltip("Режим вращения")
+
+            elseif i == 3 then
+
+                if imgui.Selectable_Bool("ScM", currentMode:readInt() == i) then
+                    curEditMode:writeInt(3)
+                    editModeApply()
+                end
+                tooltip("Режим масштаба")
+
             end
         end
-        tooltip("Выделение граунда на выбранном слое")
-
-        if imgui.Checkbox("Граунды", ffi.new("bool[1]", grosBool)) then
-            if grosBool then
-                grosSelect:writeByte(0)
-            else
-                grosSelect:writeByte(1)
-                if groBool then
-                    groSelect:writeByte(0)
-                end
-            end
-        end
-        tooltip("Выделение граунда на всех слоях")
-
-        imgui.EndPopup()
+        imgui.EndTable()
     end
-    tooltip("Режим выделения\nПравый клик для настроек")
-
-    imgui.SameLine()
-
-    if imgui.Button("MM", imgui.ImVec2(32, 24)) then
-        curEditMode:writeInt(1)
-        editModeApply()
-    end
-    tooltip("Режим перемещения [Ctrl+ЛКМ]")
-
-    imgui.SameLine()
-
-    if imgui.Button("RM", imgui.ImVec2(32, 24)) then
-        curEditMode:writeInt(2)
-        editModeApply()
-    end
-    tooltip("Режим вращения")
-
-    imgui.SameLine()
-
-    if imgui.Button("ScM", imgui.ImVec2(32, 24)) then
-        curEditMode:writeInt(3)
-        editModeApply()
-    end
-    tooltip("Режим масштаба")
-
-
 
     if imgui.Button("IM", imgui.ImVec2(32, 24)) then
         invertObjects(objectPool.addr)

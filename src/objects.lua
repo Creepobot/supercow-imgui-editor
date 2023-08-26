@@ -29,7 +29,7 @@ return function()
             end
             index = index + 1
             local selectedName = selectedNameAddr:readInt() == 0 and "" or selectedNameAddr:readOffset():readString()
-            if imgui.Selectable_Bool(string.format("%i. %s", index, name:readString()), selectedName == name:readString()) then
+            if imgui.Selectable_Bool(string.format("%i. %s", index, name:readString()), currentMode:readInt() == 4 and selectedName == name:readString()) then
                 dunno3:writeInt(0)
                 gameobjsIndex:writeInt(i)
                 local d2 = dunno2:readInt()

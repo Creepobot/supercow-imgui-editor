@@ -33,6 +33,7 @@
         "currentStageAddr",
         "currentLevelAddr",
         "currentGroup",
-        "modalExecuted"
+        "modalExecuted",
+        "currentMode"
     ]
 }

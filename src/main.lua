@@ -30,6 +30,8 @@ initEditorLevel = memory.at("55 8B EC 83 EC ? A1 ? ? ? ? 89 45 ? E8"):getFunctio
 
 currentGroup = memory.at("A1 ? ? ? ? 6B C0 ? 0F BE 88"):add(1):readOffset()
 
+currentMode = memory.at("C7 05 ? ? ? ? ? ? ? ? A1 ? ? ? ? A3"):add(2):readOffset()
+
 local renderExtraparam = require("src.extraparam")
 local renderLevelParameters = require("src.parameters")
 local renderActions = require("src.actions")
