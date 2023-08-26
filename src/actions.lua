@@ -1,3 +1,5 @@
+---@diagnostic disable: undefined-field
+
 local curEditMode = memory.at("C7 05 ? ? ? ? ? ? ? ? E8 ? ? ? ? E8 ? ? ? ? 8B 0D"):add(2):readOffset()
 local editModeApply = memory.at("E8 ? ? ? ? E8 ? ? ? ? 8B 0D ? ? ? ? 89 0D"):readNearCall():getFunction("int (*)()")
 

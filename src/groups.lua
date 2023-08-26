@@ -1,3 +1,5 @@
+---@diagnostic disable: undefined-field
+
 local groupsCount = memory.at("8B 0D ? ? ? ? 83 E9 ? 51"):add(2):readOffset()
 local groupsPool = memory.at("81 C1 ? ? ? ? 51 8D 55 ? 52 E8"):add(2):readOffset()
 

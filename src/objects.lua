@@ -1,3 +1,5 @@
+---@diagnostic disable: undefined-field
+
 local totalObjects = memory.at("3B 0D ? ? ? ? 7D ? 8B 55 ? 6B D2 ? A1"):add(2):readOffset()
 local gameobjsPool = memory.at("81 C2 ? ? ? ? 52 8B 45 ? 83 C0"):add(2):readOffset()
 local gameobjsIndex = memory.at("A3 ? ? ? ? 83 3D ? ? ? ? ? 74 ? 8B 0D"):add(1):readOffset()
