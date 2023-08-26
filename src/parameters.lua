@@ -8,10 +8,23 @@ local curBackIndex = memory.at("A1 ? ? ? ? 69 C0 ? ? ? ? 05 ? ? ? ? 89 45 ? C7 4
 local curTaskIndex = curBackIndex:add(4)
 local curMusicIndex = curTaskIndex:add(4)
 
-local callOnce = true
 local curBackName
 local curTaskName
 local curMusicName
+
+local initEditorLevelHook
+initEditorLevelHook = memory.at("55 8B EC 83 EC ? A1 ? ? ? ? 89 45 ? E8"):hook("int (*)()", function()
+    local idiNahooy = initEditorLevelHook.orig()
+    if idiNahooy ~= 2 then
+        curBackName = levelBackPool:add(996 * curBackIndex:readInt()):readString(32)
+        curTaskName = levelTaskPool:add(32 * curTaskIndex:readInt()):readString(32)
+        curMusicName = levelMusicPool:add(32 * curMusicIndex:readInt()):readString(32)
+    end
+    return idiNahooy
+end)
+
+local callOnce = true
+
 
 return function()
     if callOnce then
