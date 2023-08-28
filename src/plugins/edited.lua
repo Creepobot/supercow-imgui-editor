@@ -1,15 +1,10 @@
 ---@diagnostic disable: undefined-field
 
-local isLevelEdited_closeWindowCall = memory.at("E8 ? ? ? ? 83 F8 ? 74 ? C7 05")
-local isLevelEdited_intiLevelCall = memory.at("E8 ? ? ? ? 89 45 ? 83 7D ? ? 75 ? E9")
-local endProcess = memory.at("C7 05 ? ? ? ? ? ? ? ? 33 C0 EB"):add(2):readOffset()
-local levelEditedBool = objectPool:add(-8)
-
 local openEditedConfirmation = false
 local whereCalled = 0
 
-local function levelEditedWindowClose()
-    if levelEditedBool:readSBool() then
+local function isLevelEdited_closeWindow()
+    if storage.levelEdited:readSBool() then
         openEditedConfirmation = true
         whereCalled = 1
     else
@@ -17,10 +12,10 @@ local function levelEditedWindowClose()
     end
     return 2
 end
-levelEditedWindowCloseCallback = ffi.cast("int (*)()", levelEditedWindowClose)
+isLevelEdited_closeWindow_Callback = ffi.cast("int (*)()", isLevelEdited_closeWindow)
 
-local function levelEditedLevelInit()
-    if levelEditedBool:readSBool() then
+local function isLevelEdited_intiLevel()
+    if storage.levelEdited:readSBool() then
         openEditedConfirmation = true
         whereCalled = 2
     else
@@ -28,16 +23,16 @@ local function levelEditedLevelInit()
     end
     return 2
 end
-levelEditedLevelInitCallback = ffi.cast("int (*)()", levelEditedLevelInit)
+isLevelEdited_intiLevel_Callback = ffi.cast("int (*)()", isLevelEdited_intiLevel)
 
-isLevelEdited_closeWindowCall:writeNearCall(tonumber(ffi.cast("uint32_t", levelEditedWindowCloseCallback)))
-isLevelEdited_intiLevelCall:writeNearCall(tonumber(ffi.cast("uint32_t", levelEditedLevelInitCallback)))
+storage.isLevelEdited_closeWindowCall:writeNearCall(tonumber(ffi.cast("uint32_t", isLevelEdited_closeWindow_Callback)))
+storage.isLevelEdited_intiLevelCall:writeNearCall(tonumber(ffi.cast("uint32_t", isLevelEdited_intiLevel_Callback)))
 
 local function closeDialog()
     if whereCalled == 1 then
-        endProcess:writeInt(1)
+        storage.endProcess:writeInt(1)
     elseif whereCalled == 2 then
-        initEditorLevel()
+        storage.initEditorLevel()
     end
     whereCalled = 0
     openEditedConfirmation = false
@@ -59,26 +54,26 @@ return function()
         imgui.Dummy(imgui.ImVec2(0,2.5))
 
         if imgui.Button("Да", imgui.ImVec2(imgui.GetWindowSize().x * 0.30, 0)) then
-            saveLevel()
+            storage.saveLevel()
             closeDialog()
         end
 
         imgui.SameLine()
 
         if imgui.Button("Нет", imgui.ImVec2(imgui.GetWindowSize().x * 0.29, 0)) then
-            levelEditedBool:writeByte(0)
+            storage.levelEdited:writeByte(0)
             closeDialog()
         end
 
         imgui.SameLine()
 
         if imgui.Button("Отмена", imgui.ImVec2(imgui.GetWindowSize().x * 0.29, 0)) then
-            local s = currentStageAddr:readInt()
-            local l = currentLevelAddr:readInt()
+            local s = storage.currentStage:readInt()
+            local l = storage.currentLevel:readInt()
             currentEditorStage[0] = s + 1
             currentEditorLevel[0] = l + 1
-            currentEditorStageAddr:writeInt(s)
-            currentEditorLevelAddr:writeInt(l)
+            storage.currentEditorStage:writeInt(s)
+            storage.currentEditorLevel:writeInt(l)
             whereCalled = 0
             openEditedConfirmation = false
             imgui.CloseCurrentPopup()

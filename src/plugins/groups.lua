@@ -1,15 +1,12 @@
 ---@diagnostic disable: undefined-field
 
-local groupsCount = memory.at("8B 0D ? ? ? ? 83 E9 ? 51"):add(2):readOffset()
-local groupsPool = memory.at("81 C1 ? ? ? ? 51 8D 55 ? 52 E8"):add(2):readOffset()
-
 local cleanGroupsArray = {}
 
 function CleanGroups()
-    local gc = groupsCount:readInt() - 1
+    local gc = storage.groupsCount:readInt() - 1
     for i = 0, gc, 1 do
-        local name = groupsPool:add(36 * i):readString()
-        local parent = groupsPool:add(36 * i + 32):readInt()
+        local name = storage.groupsPool:add(36 * i):readString()
+        local parent = storage.groupsPool:add(36 * i + 32):readInt()
         if parent < 0 then
             cleanGroupsArray[i] = { ["name"] = name }
         else
@@ -31,8 +28,8 @@ local function renderGroups(tbl)
             end
             imgui.Indent(imgui.GetTreeNodeToLabelSpacing() - 17)
         else
-            if imgui.Selectable_Bool(v["name"], k == currentGroup:readInt()) then
-                currentGroup:writeInt(k)
+            if imgui.Selectable_Bool(v["name"], k == storage.currentGroup:readInt()) then
+                storage.currentGroup:writeInt(k)
             end
         end
     end

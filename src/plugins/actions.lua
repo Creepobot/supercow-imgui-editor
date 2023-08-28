@@ -1,24 +1,5 @@
 ---@diagnostic disable: undefined-field
 
-local curEditMode = memory.at("C7 05 ? ? ? ? ? ? ? ? E8 ? ? ? ? E8 ? ? ? ? 8B 0D"):add(2):readOffset()
-local editModeApply = memory.at("E8 ? ? ? ? E8 ? ? ? ? 8B 0D ? ? ? ? 89 0D"):readNearCall():getFunction("int (*)()")
-
-local invertObjects = memory.at("55 8B EC 83 EC ? 89 4D ? C6 45 ? ? C7 45 ? ? ? ? ? EB ? 8B 45 ? 83 C0 ? 89 45 ? 8B 4D ? 8B 55"):getFunction("int (__thiscall *)(int)")
-local deleteObjects = memory.at("55 8B EC 83 EC ? 56 89 4D ? C6 45"):getFunction("int (__thiscall *)(int)")
-local cloneObjects = memory.at("55 8B EC 83 EC ? 89 4D ? A1 ? ? ? ? 89 45 ? C6 45"):getFunction("int (__thiscall *)(int)")
-local objectToTop = memory.at("55 8B EC 83 EC ? 56 89 4D ? 8B 45 ? 8B 88"):getFunction("void (__thiscall *)(int)")
-local objectToDown = memory.at("55 8B EC 83 EC ? 56 89 4D ? C7 45 ? ? ? ? ? C7 45"):getFunction("void (__thiscall *)(int)")
-
-local undo = memory.at("55 8B EC 83 EC ? 89 4D ? 8B 45 ? 8B 4D ? 8B 90"):getFunction("int (__thiscall *)(int)")
-local redo = memory.at("E8 ? ? ? ? E9 ? ? ? ? 83 7D ? ? 75 ? C7 05"):readNearCall():getFunction("int (__thiscall *)(int)")
-
-local snapToGrid = memory.at("A2 ? ? ? ? E8 ? ? ? ? E9"):add(1):readOffset()
-local debugGrid = memory.at("A2 ? ? ? ? E9 ? ? ? ? 83 7D"):add(1):readOffset()
-
-local objsBool = memory.at("0F B6 15 ? ? ? ? 85 D2 0F 84 ? ? ? ? C7 45"):add(3):readOffset()
-local grosSelect = memory.at("0F B6 05 ? ? ? ? 85 C0 75 ? 0F B6 0D ? ? ? ? 85 C9 75 ? E9 ? ? ? ? 8D 4D ? E8 ? ? ? ? 8D 4D"):add(3):readOffset()
-local groSelect = memory.at("0F B6 05 ? ? ? ? 85 C0 74 ? 8B 0D ? ? ? ? 3B 4D ? 74 ? EB"):add(3):readOffset()
-
 return function()
     imgui.SetNextWindowPos(imgui.ImVec2(mainBlockPos.x, mainBlockPos.y + mainBlockSize))
     imgui.SetNextWindowSize(imgui.ImVec2(168, -1))
@@ -29,27 +10,28 @@ return function()
             imgui.TableNextColumn()
             if i == 0 then
 
-                if imgui.Selectable_Bool("SM", currentMode:readInt() == i) then
-                    curEditMode:writeInt(0)
-                    editModeApply()
+                if imgui.Selectable_Bool("SM", storage.currentMode:readInt() == i) then
+                    storage.currentMode:writeInt(0)
+                    storage.currentModeApply()
                 end
 
                 if imgui.BeginPopupContextItem() then
-                    local dunno2Bool = objsBool:readSBool()
+                    local dunno2Bool = storage.objsSelect:readSBool()
                     if imgui.Checkbox("Объекты", ffi.new("bool[1]", dunno2Bool)) then
-                        objsBool:writeByte(dunno2Bool and 0 or 1)
+                        storage.objsSelect:writeByte(dunno2Bool and 0 or 1)
                     end
                     tooltip("Выделение объектов на уровне")
 
-                    local groBool = groSelect:readSBool()
-                    local grosBool = grosSelect:readSBool()
+                    local groBool = storage.groSelect:readSBool()
+                    local grosBool = storage.grosSelect:readSBool()
+
                     if imgui.Checkbox("Граунд", ffi.new("bool[1]", groBool)) then
                         if groBool then
-                            groSelect:writeByte(0)
+                            storage.groSelect:writeByte(0)
                         else
-                            groSelect:writeByte(1)
+                            storage.groSelect:writeByte(1)
                             if grosBool then
-                                grosSelect:writeByte(0)
+                                storage.grosSelect:writeByte(0)
                             end
                         end
                     end
@@ -57,11 +39,11 @@ return function()
 
                     if imgui.Checkbox("Граунды", ffi.new("bool[1]", grosBool)) then
                         if grosBool then
-                            grosSelect:writeByte(0)
+                            storage.grosSelect:writeByte(0)
                         else
-                            grosSelect:writeByte(1)
+                            storage.grosSelect:writeByte(1)
                             if groBool then
-                                groSelect:writeByte(0)
+                                storage.groSelect:writeByte(0)
                             end
                         end
                     end
@@ -73,25 +55,25 @@ return function()
 
             elseif i == 1 then
 
-                if imgui.Selectable_Bool("MM", currentMode:readInt() == i) then
-                    curEditMode:writeInt(1)
-                    editModeApply()
+                if imgui.Selectable_Bool("MM", storage.currentMode:readInt() == i) then
+                    storage.currentMode:writeInt(1)
+                    storage.currentModeApply()
                 end
                 tooltip("Режим перемещения [Ctrl+ЛКМ]")
 
             elseif i == 2 then
 
-                if imgui.Selectable_Bool("RM", currentMode:readInt() == i) then
-                    curEditMode:writeInt(2)
-                    editModeApply()
+                if imgui.Selectable_Bool("RM", storage.currentMode:readInt() == i) then
+                    storage.currentMode:writeInt(2)
+                    storage.currentModeApply()
                 end
                 tooltip("Режим вращения")
 
             elseif i == 3 then
 
-                if imgui.Selectable_Bool("ScM", currentMode:readInt() == i) then
-                    curEditMode:writeInt(3)
-                    editModeApply()
+                if imgui.Selectable_Bool("ScM", storage.currentMode:readInt() == i) then
+                    storage.currentMode:writeInt(3)
+                    storage.currentModeApply()
                 end
                 tooltip("Режим масштаба")
 
@@ -101,41 +83,41 @@ return function()
     end
 
     if imgui.Button("IM", imgui.ImVec2(32, 24)) then
-        invertObjects(objectPool.addr)
+        storage.invertObjects(storage.objectPoolAddr)
     end
     tooltip("Отзеркалить объект(ы) [I]")
 
     imgui.SameLine()
 
     if imgui.Button("DM", imgui.ImVec2(32, 24)) then
-        deleteObjects(objectPool.addr)
+        storage.deleteObjects(storage.objectPoolAddr)
     end
     tooltip("Удалить объект(ы) [Del]")
 
     imgui.SameLine()
 
     if imgui.Button("CM", imgui.ImVec2(32, 24)) then
-        cloneObjects(objectPool.addr)
+        storage.cloneObjects(storage.objectPoolAddr)
     end
     tooltip("Клонировать объект(ы) [Alt+ЛКМ]")
 
     imgui.SameLine()
 
     if imgui.Button("TL", imgui.ImVec2(32, 24)) then
-        objectToTop(objectPool.addr)
+        storage.objectToTop(storage.objectPoolAddr)
     end
     tooltip("Переместить объект(ы) на вершину слоя")
 
     imgui.Indent()
     if imgui.Button("UN", imgui.ImVec2(32, 24)) then
-        undo(objectPool.addr)
+        storage.undo(storage.objectPoolAddr)
     end
     tooltip("Отменить прошлое действие [Ctrl+Z]")
 
     imgui.SameLine()
 
     if imgui.Button("RE", imgui.ImVec2(32, 24)) then
-        redo(objectPool.addr)
+        storage.redo(storage.objectPoolAddr)
     end
     tooltip("Вернуть отменённое действие [Ctrl+Y]")
 
@@ -143,7 +125,7 @@ return function()
 
     imgui.Indent(96)
     if imgui.Button("BL", imgui.ImVec2(38, 24)) then
-        objectToDown(objectPool.addr)
+        storage.objectToDown(storage.objectPoolAddr)
     end
     tooltip("Переместить объект(ы) на дно слоя")
     imgui.Unindent(96)
@@ -151,20 +133,18 @@ return function()
 
     imgui.Dummy(imgui.ImVec2(0,2.5))
 
-
-
-    local snapToBool = snapToGrid:readByte() ~= 0
+    local snapToBool = storage.snapToGrid:readSBool()
     if imgui.Checkbox("STG", ffi.new("bool[1]", snapToBool)) then
-        snapToGrid:writeByte(snapToBool and 0 or 1)
+        storage.snapToGrid:writeByte(snapToBool and 0 or 1)
     end
     tooltip("Snap To Grid\nПривязка объектов к условной\nсетке во время перемещения [Ctrl+G]")
 
     imgui.SameLine()
     imgui.Indent(85)
 
-    local debugGridBool = debugGrid:readByte() ~= 0
+    local debugGridBool = storage.debugGrid:readSBool()
     if imgui.Checkbox("SGW", ffi.new("bool[1]", debugGridBool)) then
-        debugGrid:writeByte(debugGridBool and 0 or 1)
+        storage.debugGrid:writeByte(debugGridBool and 0 or 1)
     end
     tooltip("Show Grid View\nВключить отображение сетки [G]")
 

@@ -3,23 +3,19 @@
 -- Зануляет логику, связанную с окном экстрапараметров. Просто чтобы игра себе мозги не ебала
 memory.at("E8 ? ? ? ? C6 05 ? ? ? ? ? D9 05"):add(-11):writeNop(23)
 
-local objectPoolAddr = memory.at("B9 ? ? ? ? E8 ? ? ? ? 68 ? ? ? ? 68 ? ? ? ? A1"):add(1):readInt()
-local getSelectedObject = memory.at("E8 ? ? ? ? 85 C0 74 ? 6A ? 68"):readNearCall():getFunction("int (__thiscall *)(int)")
-local setExtraparams = memory.at("E8 ? ? ? ? 6A ? 8B 45 ? 50 FF 15"):readNearCall():getFunction("void (__thiscall *)(int, char*)")
-
 local callOnce = true
 local objAddr
 local header
 local extraparam
 
 return function()
-    if renderExtraparamsDialog:readByte() == 1 and modalExecuted ~= 2 then
+    if storage.renderExtraparamsDialog:readSBool() and modalExecuted ~= 2 then
         if callOnce then
             callOnce = false
 
-            local obj = getSelectedObject(objectPoolAddr)
+            local obj = storage.getSelectedObject(storage.objectPoolAddr)
             if obj == 0 then
-                renderExtraparamsDialog:writeByte(0)
+                storage.renderExtraparamsDialog:writeByte(0)
                 callOnce = true
                 goto endhere
             end
@@ -40,8 +36,8 @@ return function()
             tooltip("Ввод экстрапараметров\nдля выделенного объекта")
 
             if imgui.Button("ОК", imgui.ImVec2(imgui.GetWindowSize().x * 0.46, 0)) then
-                setExtraparams(objAddr.addr, extraparam)
-                renderExtraparamsDialog:writeByte(0)
+                storage.setExtraparams(objAddr.addr, extraparam)
+                storage.renderExtraparamsDialog:writeByte(0)
                 callOnce = true
                 imgui.CloseCurrentPopup()
                 modalExecuted = 0
@@ -50,7 +46,7 @@ return function()
             imgui.SameLine()
 
             if imgui.Button("Отмена", imgui.ImVec2(imgui.GetWindowSize().x * 0.46, 0)) then
-                renderExtraparamsDialog:writeByte(0)
+                storage.renderExtraparamsDialog:writeByte(0)
                 callOnce = true
                 imgui.CloseCurrentPopup()
                 modalExecuted = 0

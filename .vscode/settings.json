@@ -34,6 +34,9 @@
         "currentLevelAddr",
         "currentGroup",
         "modalExecuted",
-        "currentMode"
+        "currentMode",
+        "storage",
+        "isLevelEdited_closeWindow_Callback",
+        "isLevelEdited_intiLevel_Callback"
     ]
 }
